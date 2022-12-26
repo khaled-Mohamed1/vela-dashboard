@@ -30,7 +30,10 @@
         enctype="multipart/form-data">
           @csrf
 
-        <div class="col-md-6">
+          <input type="hidden" name="locale" id="form_locale">
+
+
+          <div class="col-md-6">
           <label for="full_name" class="form-label" id="form_full_name">Full Name <span style="color:red;">*</span></label>
           <input value="{{old('full_name')}}" type="text" name="full_name" class="form-control @error('full_name') is-invalid @enderror" id="full_name" />
 
@@ -105,4 +108,4 @@
     <script src="{{asset('dashboard/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{asset('dashboard/js/forms-lang.js')}}"></script>
   </body>
-</html>
+</html lang="ar" dir="ltr">

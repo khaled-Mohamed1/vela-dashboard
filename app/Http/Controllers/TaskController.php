@@ -10,6 +10,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
@@ -45,26 +46,44 @@ class TaskController extends Controller
     public function store(Request $request)
     {
 
-        $this->validate($request, [
-            'title' => 'required',
-            'description' => 'required',
-            'start_date' => 'required|date|before:end_date',
-            'end_date' => 'required|date|after:start_date',
-            'user_id' => 'required'
-        ],
-            [
-                'title.required' => 'يجب ادخال عنوان المهمة!',
-                'description.required' => 'يجب ادخال وصف المهمة!',
-                'user_id.required' => 'يجب اختيار الموظفين!',
-                'start_date.required' => 'يجب ادخال تاريخ بداية المهمة',
-                'start_date.date' => 'الحقل يجب انا يكون تاريخ',
-                'start_date.before' => 'تحديد تاريخ البداية قبل تاريخ النهاية',
-                'end_date.required' => 'يجب ادخال تاريخ نهاية المهمة',
-                'end_date.date' => 'الحقل يجب انا يكون تاريخ',
-                'end_date.after' => 'تحديد تاريخ النهاية بعد تاريخ البداية',
+        App::setLocale($request->input('locale'));
 
+        // Determine the current language
+        $language = App::getLocale();
+
+        if ($language == 'en') {
+            $this->validate($request, [
+                'title' => 'required',
+                'description' => 'required',
+                'start_date' => 'required|date|before:end_date',
+                'end_date' => 'required|date|after:start_date',
+                'user_id' => 'required'
             ]
-        );
+            );
+        } elseif ($language == 'ar') {
+            $this->validate($request, [
+                'title' => 'required',
+                'description' => 'required',
+                'start_date' => 'required|date|before:end_date',
+                'end_date' => 'required|date|after:start_date',
+                'user_id' => 'required'
+            ],
+                [
+                    'title.required' => 'يجب ادخال عنوان المهمة!',
+                    'description.required' => 'يجب ادخال وصف المهمة!',
+                    'user_id.required' => 'يجب اختيار الموظفين!',
+                    'start_date.required' => 'يجب ادخال تاريخ بداية المهمة',
+                    'start_date.date' => 'الحقل يجب انا يكون تاريخ',
+                    'start_date.before' => 'تحديد تاريخ البداية قبل تاريخ النهاية',
+                    'end_date.required' => 'يجب ادخال تاريخ نهاية المهمة',
+                    'end_date.date' => 'الحقل يجب انا يكون تاريخ',
+                    'end_date.after' => 'تحديد تاريخ النهاية بعد تاريخ البداية',
+
+                ]
+            );
+        }
+
+
 
         DB::beginTransaction();
         try {
@@ -89,7 +108,13 @@ class TaskController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->route('tasks')->with('success','تم انشاء المهمة بنجاح');
+
+            if ($language == 'en') {
+                return redirect()->route('tasks')->with('success','Task Created Successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->route('tasks')->with('success','تم انشاء المهمة بنجاح');
+            }
+
         } catch (\Throwable $th) {
             // Rollback and return with Error
             DB::rollBack();
@@ -136,13 +161,26 @@ class TaskController extends Controller
     public function addNote(Task $task,Request $request)
     {
 
-        $this->validate($request, [
-            'note' => 'required',
-        ],
-            [
-                'note.required' => 'يجب ادخال الملاحظة!',
+        App::setLocale($request->input('locale'));
+
+        // Determine the current language
+        $language = App::getLocale();
+
+        if ($language == 'en') {
+            $this->validate($request, [
+                'note' => 'required',
             ]
-        );
+            );
+        } elseif ($language == 'ar') {
+            $this->validate($request, [
+                'note' => 'required',
+            ],
+                [
+                    'note.required' => 'يجب ادخال الملاحظة!',
+                ]
+            );
+        }
+
 
         DB::beginTransaction();
         try {
@@ -155,7 +193,12 @@ class TaskController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->back()->with('success','تم اضافة ملاحظة للمهمة بنجاح');
+
+            if ($language == 'en') {
+                return redirect()->back()->with('success','Note Added To The Task Successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->back()->with('success','تم اضافة ملاحظة للمهمة بنجاح');
+            }
         } catch (\Throwable $th) {
             // Rollback and return with Error
             DB::rollBack();
@@ -184,25 +227,40 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        $this->validate($request, [
-            'title' => 'required',
-            'description' => 'required',
-            'start_date' => 'required|date|before:end_date',
-            'end_date' => 'required|date|after:start_date',
-//            'user_id' => 'required'
-        ],
-            [
-                'title.required' => 'يجب ادخال عنوان المهمة!',
-                'description.required' => 'يجب ادخال وصف المهمة!',
-//                'user_id.required' => 'يجب اختيار الموظفين!',
-                'start_date.required' => 'يجب ادخال تاريخ بداية المهمة',
-                'start_date.date' => 'الحقل يجب انا يكون تاريخ',
-                'start_date.before' => 'تحديد تاريخ البداية قبل تاريخ النهاية',
-                'end_date.required' => 'يجب ادخال تاريخ نهاية المهمة',
-                'end_date.date' => 'الحقل يجب انا يكون تاريخ',
-                'end_date.after' => 'تحديد تاريخ النهاية بعد تاريخ البداية',
+
+        App::setLocale($request->input('locale'));
+
+        // Determine the current language
+        $language = App::getLocale();
+
+        if ($language == 'en') {
+            $this->validate($request, [
+                'title' => 'required',
+                'description' => 'required',
+                'start_date' => 'required|date|before:end_date',
+                'end_date' => 'required|date|after:start_date',
             ]
-        );
+            );
+        } elseif ($language == 'ar') {
+            $this->validate($request, [
+                'title' => 'required',
+                'description' => 'required',
+                'start_date' => 'required|date|before:end_date',
+                'end_date' => 'required|date|after:start_date',
+            ],
+                [
+                    'title.required' => 'يجب ادخال عنوان المهمة!',
+                    'description.required' => 'يجب ادخال وصف المهمة!',
+                    'start_date.required' => 'يجب ادخال تاريخ بداية المهمة',
+                    'start_date.date' => 'الحقل يجب انا يكون تاريخ',
+                    'start_date.before' => 'تحديد تاريخ البداية قبل تاريخ النهاية',
+                    'end_date.required' => 'يجب ادخال تاريخ نهاية المهمة',
+                    'end_date.date' => 'الحقل يجب انا يكون تاريخ',
+                    'end_date.after' => 'تحديد تاريخ النهاية بعد تاريخ البداية',
+                ]
+            );        }
+
+
 
         DB::beginTransaction();
         try {
@@ -213,20 +271,13 @@ class TaskController extends Controller
                 'end_date' => $request->end_date,
             ]);
 
-//            $task_id = $task->id;
-//
-//            foreach ($request->user_id as $key => $user_id) {
-//                $task_user = TaskUser::create([
-//                    'task_id' => $task_id,
-//                    'user_id' => $user_id,
-//                ]);
-//            }
-
-
-
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->route('tasks')->with('success','تم تعديل المهمة بنجاح');
+            if ($language == 'en') {
+                return redirect()->route('tasks')->with('success','Task Updated Successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->route('tasks')->with('success','تم تعديل المهمة بنجاح');
+            }
         } catch (\Throwable $th) {
             // Rollback and return with Error
             DB::rollBack();
@@ -240,10 +291,15 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Task $task)
+    public function destroy(Request $request,Task $task)
     {
         DB::beginTransaction();
         try {
+
+            App::setLocale($request->input('locale'));
+
+            // Determine the current language
+            $language = App::getLocale();
 
             // delete task
             $task_deleted = Task::find($task->id)->delete();
@@ -252,7 +308,11 @@ class TaskController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->back()->with('success','تم حذف المهمة بنجاح');
+            if ($language == 'en') {
+                return redirect()->back()->with('success','Task Deleted Successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->back()->with('success','تم حذف المهمة بنجاح');
+            }
 
         } catch (\Throwable $th) {
             // Rollback and return with Error

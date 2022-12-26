@@ -191,6 +191,8 @@
                       <form id="user-delete-form{{$user->id}}" method="POST" action="{{ route('users.destroy', ['user' => $user->id]) }}">
                           @csrf
                           @method('DELETE')
+                          <input type="hidden" name="locale" id="form_locale_delete">
+
                       </form>
                   </div>
               </div>

@@ -73,6 +73,10 @@ function changeModalLang(){
     document.querySelector('#user_delete_modal_content') ? document.querySelectorAll('#user_delete_modal_content').forEach(e => e.textContent = "هل تريد حذف الموظف") : '';
     document.querySelectorAll('#questionMark').forEach(e => e.textContent = "؟");
     document.querySelectorAll('#delete_modal_no').forEach(e => e.textContent = "لا");
-    document.querySelectorAll('#delete_modal_yes').forEach(e => e.textContent = "نعم");
+      document.querySelectorAll('#delete_modal_yes').forEach(e => e.textContent = "نعم");
+      document.querySelectorAll('#form_locale_delete').forEach(e => e.value = "ar");
+  }else{
+      document.querySelectorAll('#form_locale_delete').forEach(e => e.value = "en");
+
   }
 }

@@ -12,10 +12,14 @@ window.onload = function () {
       // START CHANGE LANGUAGE
       if (!localStorage.getItem("vela-dash-lang") || localStorage.getItem("vela-dash-lang") == "en") {
         document.documentElement.dir = "ltr";
+          document.querySelector("#form_locale") ? form_locale.value = "en": '';
+
       } else {
         document.documentElement.dir = "rtl";
-        document.querySelector("#form_add_admin") ? form_add_admin.textContent = "إضافة مشرف": '';
-        document.querySelector("#form_full_name") ? form_full_name.innerHTML = 'الاسم رباعي <span style="color:red;">*</span>': '';
+          document.querySelector("#form_add_admin") ? form_add_admin.textContent = "إضافة مشرف": '';
+          document.querySelector("#form_locale") ? form_locale.value = "ar": '';
+
+          document.querySelector("#form_full_name") ? form_full_name.innerHTML = 'الاسم رباعي <span style="color:red;">*</span>': '';
         document.querySelector("#form_add_email") ? form_add_email.innerHTML = 'البريد الالكتروني <span style="color:red;">*</span>': '';
         document.querySelector("#form_add_password") ? form_add_password.innerHTML = 'كلمة المرور <span style="color:red;">*</span>': '';
         document.querySelector("#form_add_phone") ? form_add_phone.innerHTML = 'رقم الجوال <span style="color:red;">*</span>': '';

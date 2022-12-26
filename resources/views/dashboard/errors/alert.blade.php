@@ -3,7 +3,7 @@
     <div class="alert alert-success alert-dismissible text-left" role="alert">
         <button type="button" class="close" data-dismiss="alert">
         </button>
-        <strong>تم بنجاح !</strong> {{ session('success') }}
+        <strong> !</strong> {{ session('success') }}
     </div>
 @endif
 
@@ -11,7 +11,7 @@
     <div class="alert alert-warning alert-dismissible text-left" role="alert">
         <button type="button" class="close" data-dismiss="alert">
         </button>
-        <strong>تحذير !</strong> {{ session('warning') }}
+        <strong> !</strong> {{ session('warning') }}
     </div>
 @endif
 
@@ -20,7 +20,7 @@
     <div class="alert alert-danger alert-dismissible text-left" role="alert">
         <button type="button" class="close" data-dismiss="alert">
         </button>
-        <strong>خطأ !</strong> {{ session('error') }}
+        <strong> !</strong> {{ session('error') }}
     </div>
 @endif
 

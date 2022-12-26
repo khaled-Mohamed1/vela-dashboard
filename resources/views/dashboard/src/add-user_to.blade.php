@@ -30,6 +30,9 @@
             enctype="multipart/form-data">
             @csrf
 
+            <input type="hidden" name="locale" id="form_locale">
+
+
             <div class="col-md-4">
                 <label for="full_name" class="form-label" id="form_full_name">Full Name <span style="color:red;">*</span></label>
                 <input value="{{old('full_name')}}" type="text" name="full_name" class="form-control @error('full_name') is-invalid @enderror" id="full_name" />

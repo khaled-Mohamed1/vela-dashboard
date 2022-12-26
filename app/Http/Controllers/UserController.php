@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -45,32 +46,46 @@ class UserController extends Controller
     public function store(Request $request)
     {
 
+        App::setLocale($request->input('locale'));
+
+        $language = App::getLocale();
+
+        if ($language == 'en') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required',
+                'job' => 'required',
+                'phone_NO' => 'required',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'company_name' => 'required',
+            ],
+            );
+        } elseif ($language == 'ar') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required',
+                'job' => 'required',
+                'phone_NO' => 'required',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'company_name' => 'required',
+            ],
+                [
+                    'full_name.required' => 'يجب ادخال اسم المشرف!',
+                    'email.required' => 'يجب ادخال البريد الإلكتروني!',
+                    'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
+                    'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
+                    'password.required' => 'يجب ادخال كلمة السر!',
+                    'job.required' => 'يجب ادخال وظيفة المشرف!',
+                    'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
+                    'company_name.required' => 'يجب ادخال اسم الشركة!',
+                    'image.required' => 'يجب ادخال صورة المشرف!',
+
+                ]);
+        }
 
 
-        $this->validate($request, [
-            'full_name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required',
-            'job' => 'required',
-            'phone_NO' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'company_name' => 'required',
-
-//            'roles' => 'required'
-        ],
-        [
-            'full_name.required' => 'يجب ادخال اسم المشرف!',
-            'email.required' => 'يجب ادخال البريد الإلكتروني!',
-            'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
-            'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
-            'password.required' => 'يجب ادخال كلمة السر!',
-            'job.required' => 'يجب ادخال وظيفة المشرف!',
-            'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
-//            'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
-            'company_name.required' => 'يجب ادخال اسم الشركة!',
-            'image.required' => 'يجب ادخال صورة المشرف!',
-
-        ]);
 
         DB::beginTransaction();
         try {
@@ -93,25 +108,19 @@ class UserController extends Controller
                 'role_id' => '2'
             ]);
 
-
-
             $user->assignRole(2);
-
-
 
             Storage::disk('public')->put('admins/' . $imageName, file_get_contents($request->image));
 
-
-//            $input = $request->all();
-//            $input['password'] = Hash::make($input['password']);
-//
-//            $user = User::create($input);
-//            $user->assignRole('Admin');
-
-
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->route('admins')->with('success','تم انشاء المشرف بنجاح');
+
+            if ($language == 'en') {
+                return redirect()->route('admins')->with('success','Admin created successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->route('admins')->with('success','تم انشاء المشرف بنجاح');
+            }
+
         } catch (\Throwable $th) {
             // Rollback and return with Error
             DB::rollBack();
@@ -131,7 +140,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         return view('dashboard/src/profile_admin',
-        ['user'=>$user]);
+            ['user'=>$user]);
     }
 
     /**
@@ -156,24 +165,41 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $this->validate($request, [
-            'full_name' => 'required',
-            'email' => 'required|unique:users,email,'.$user->id.',id',
-            'job' => 'required',
-            'phone_NO' => 'required|numeric|digits:10',
-            'company_name' => 'required',
-        ],
-            [
-                'full_name.required' => 'يجب ادخال اسم المشرف!',
-                'email.required' => 'يجب ادخال البريد الإلكتروني!',
-                'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
-                'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
-                'job.required' => 'يجب ادخال وظيفة المشرف!',
-                'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
-                'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
-                'phone_NO.digits' => 'رقم الجوال يتكون من 10 ارقام!',
-                'company_name.required' => 'يجب ادخال اسم الشركة!',
-            ]);
+
+        App::setLocale($request->input('locale'));
+
+        $language = App::getLocale();
+
+        if ($language == 'en') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|unique:users,email,'.$user->id.',id',
+                'job' => 'required',
+                'phone_NO' => 'required|numeric|digits:10',
+                'company_name' => 'required',
+            ],
+                );
+        } elseif ($language == 'ar') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|unique:users,email,'.$user->id.',id',
+                'job' => 'required',
+                'phone_NO' => 'required|numeric|digits:10',
+                'company_name' => 'required',
+            ],
+                [
+                    'full_name.required' => 'يجب ادخال اسم المشرف!',
+                    'email.required' => 'يجب ادخال البريد الإلكتروني!',
+                    'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
+                    'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
+                    'job.required' => 'يجب ادخال وظيفة المشرف!',
+                    'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
+                    'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
+                    'phone_NO.digits' => 'رقم الجوال يتكون من 10 ارقام!',
+                    'company_name.required' => 'يجب ادخال اسم الشركة!',
+                ]);        }
+
+
 
         DB::beginTransaction();
         try {
@@ -209,7 +235,13 @@ class UserController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->route('admins')->with('success','تم تعديل المشرف بنجاح');
+
+            if ($language == 'en') {
+                return redirect()->route('admins')->with('success','Admin Updated successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->route('admins')->with('success','تم تعديل المشرف بنجاح');
+            }
+
 
         } catch (\Throwable $th) {
             // Rollback and return with Error
@@ -224,10 +256,15 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(User $user)
+    public function destroy(Request $request,User $user)
     {
         DB::beginTransaction();
         try {
+
+            App::setLocale($request->input('locale'));
+
+            // Determine the current language
+            $language = App::getLocale();
 
             // Detail
             $user_deleted = User::find($user->id);
@@ -243,7 +280,11 @@ class UserController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->back()->with('success','تم حذف المشرف بنجاح');
+            if ($language == 'en') {
+                return redirect()->back()->with('success','Admin Updated successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->back()->with('success','تم حذف المشرف بنجاح');
+            }
 
         } catch (\Throwable $th) {
             // Rollback and return with Error

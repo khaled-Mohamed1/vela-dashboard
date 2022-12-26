@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -46,26 +47,43 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
 
-        $this->validate($request, [
-            'full_name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required',
-            'job' => 'required',
-            'phone_NO' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-//            'roles' => 'required'
-        ],
-            [
-                'full_name.required' => 'يجب ادخال اسم المشرف!',
-                'email.required' => 'يجب ادخال البريد الإلكتروني!',
-                'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
-                'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
-                'password.required' => 'يجب ادخال كلمة السر!',
-                'job.required' => 'يجب ادخال وظيفة المشرف!',
-                'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
-//            'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
-                'image.required' => 'يجب ادخال صورة المشرف!',
-            ]);
+        App::setLocale($request->input('locale'));
+
+        // Determine the current language
+        $language = App::getLocale();
+
+
+        if ($language == 'en') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required',
+                'job' => 'required',
+                'phone_NO' => 'required',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ],
+                );
+        } elseif ($language == 'ar') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required',
+                'job' => 'required',
+                'phone_NO' => 'required',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ],
+                [
+                    'full_name.required' => 'يجب ادخال اسم المشرف!',
+                    'email.required' => 'يجب ادخال البريد الإلكتروني!',
+                    'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
+                    'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
+                    'password.required' => 'يجب ادخال كلمة السر!',
+                    'job.required' => 'يجب ادخال وظيفة المشرف!',
+                    'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
+                    'image.required' => 'يجب ادخال صورة المشرف!',
+                ]);        }
+
+
 
         DB::beginTransaction();
         try {
@@ -90,7 +108,13 @@ class EmployeeController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->route('users')->with('success','تم انشاء الموظف بنجاح');
+
+            if ($language == 'en') {
+                return redirect()->route('users')->with('success','Employee Created Successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->route('users')->with('success','تم انشاء الموظف بنجاح');
+            }
+
         } catch (\Throwable $th) {
             // Rollback and return with Error
             DB::rollBack();
@@ -101,28 +125,45 @@ class EmployeeController extends Controller
     public function storeTo(Request $request)
     {
 
-        $this->validate($request, [
-            'full_name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required',
-            'job' => 'required',
-            'phone_NO' => 'required',
-            'user_id' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-//            'roles' => 'required'
-        ],
-            [
-                'full_name.required' => 'يجب ادخال اسم المشرف!',
-                'email.required' => 'يجب ادخال البريد الإلكتروني!',
-                'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
-                'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
-                'password.required' => 'يجب ادخال كلمة السر!',
-                'job.required' => 'يجب ادخال وظيفة المشرف!',
-                'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
-                'user_id.required' => 'يجب اضافة المشرف الى المشرف!',
-//            'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
-                'image.required' => 'يجب ادخال صورة المشرف!',
-            ]);
+        App::setLocale($request->input('locale'));
+
+        // Determine the current language
+        $language = App::getLocale();
+
+        if ($language == 'en') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required',
+                'job' => 'required',
+                'phone_NO' => 'required',
+                'user_id' => 'required',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ],
+                );
+        } elseif ($language == 'ar') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required',
+                'job' => 'required',
+                'phone_NO' => 'required',
+                'user_id' => 'required',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ],
+                [
+                    'full_name.required' => 'يجب ادخال اسم المشرف!',
+                    'email.required' => 'يجب ادخال البريد الإلكتروني!',
+                    'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
+                    'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
+                    'password.required' => 'يجب ادخال كلمة السر!',
+                    'job.required' => 'يجب ادخال وظيفة المشرف!',
+                    'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
+                    'user_id.required' => 'يجب اضافة المشرف الى المشرف!',
+                    'image.required' => 'يجب ادخال صورة المشرف!',
+                ]);        }
+
+
 
         DB::beginTransaction();
         try {
@@ -147,7 +188,12 @@ class EmployeeController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->route('users')->with('success','تم انشاء الموظف بنجاح');
+            if ($language == 'en') {
+                return redirect()->route('users')->with('success','Employee Created Successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->route('users')->with('success','تم انشاء الموظف بنجاح');
+            }
+
         } catch (\Throwable $th) {
             // Rollback and return with Error
             DB::rollBack();
@@ -171,22 +217,40 @@ class EmployeeController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $this->validate($request, [
-            'full_name' => 'required',
-            'email' => 'required|unique:users,email,'.$user->id.',id',
-            'job' => 'required',
-            'phone_NO' => 'required|numeric|digits:10',
-        ],
-            [
-                'full_name.required' => 'يجب ادخال اسم المشرف!',
-                'email.required' => 'يجب ادخال البريد الإلكتروني!',
-                'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
-                'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
-                'job.required' => 'يجب ادخال وظيفة المشرف!',
-                'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
-                'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
-                'phone_NO.digits' => 'رقم الجوال يتكون من 10 ارقام!',
-            ]);
+
+        App::setLocale($request->input('locale'));
+
+        // Determine the current language
+        $language = App::getLocale();
+
+        if ($language == 'en') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|unique:users,email,'.$user->id.',id',
+                'job' => 'required',
+                'phone_NO' => 'required|numeric|digits:10',
+            ],
+                );
+        } elseif ($language == 'ar') {
+            $this->validate($request, [
+                'full_name' => 'required',
+                'email' => 'required|unique:users,email,'.$user->id.',id',
+                'job' => 'required',
+                'phone_NO' => 'required|numeric|digits:10',
+            ],
+                [
+                    'full_name.required' => 'يجب ادخال اسم المشرف!',
+                    'email.required' => 'يجب ادخال البريد الإلكتروني!',
+                    'email.email' => 'يجب ادخال البريد الإلكتروني ب "@"!',
+                    'email.unique' => 'البريد الإلكتروني الذي ادخلته مستخدم!',
+                    'job.required' => 'يجب ادخال وظيفة المشرف!',
+                    'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
+                    'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
+                    'phone_NO.digits' => 'رقم الجوال يتكون من 10 ارقام!',
+                ]);
+        }
+
+
 
         DB::beginTransaction();
         try {
@@ -220,7 +284,11 @@ class EmployeeController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->route('users')->with('success','تم تعديل الموظف بنجاح');
+            if ($language == 'en') {
+                return redirect()->route('users')->with('success','Employee Updated Successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->route('users')->with('success','تم تعديل الموظف بنجاح');
+            }
 
         } catch (\Throwable $th) {
             // Rollback and return with Error
@@ -229,10 +297,17 @@ class EmployeeController extends Controller
         }
     }
 
-    public function destroy(User $user)
+    public function destroy(Request $request,User $user)
     {
         DB::beginTransaction();
         try {
+
+            App::setLocale($request->input('locale'));
+
+            // Determine the current language
+            $language = App::getLocale();
+
+
 
             // Detail
             $user_deleted = User::find($user->id);
@@ -248,7 +323,12 @@ class EmployeeController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
-            return redirect()->back()->with('success','تم حذف الموظف بنجاح');
+            if ($language == 'en') {
+                return redirect()->back()->with('success','Employee Deleted Successfully');
+            } elseif ($language == 'ar') {
+                return redirect()->back()->with('success','تم حذف الموظف بنجاح');
+            }
+
 
         } catch (\Throwable $th) {
             // Rollback and return with Error

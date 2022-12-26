@@ -26,6 +26,9 @@
         onsubmit="(e)=>e.preventDefault()"
     >
         @csrf
+        <input type="hidden" name="locale" id="form_locale">
+
+
         <div class="col-md-12">
             <label for="add_task_title_input" class="form-label" id="add_task_title">Title</label>
             <input type="text" value="{{$task->title}}" name="title" class="form-control @error('title') is-invalid @enderror" id="add_task_title_input" placeholder="title task" />

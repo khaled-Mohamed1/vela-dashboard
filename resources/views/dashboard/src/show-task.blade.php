@@ -132,7 +132,9 @@
         <div class="modal-content">
             <form id="task-add-form{{$task->id}}" method="POST" action="{{ route('tasks.addNote', ['task' => $task->id]) }}">
                 @csrf
-            <div class="modal-header" style="display: flex; justify-content: space-between;">
+                <input type="hidden" name="locale" id="form_locale">
+
+                <div class="modal-header" style="display: flex; justify-content: space-between;">
                 <h1 class="modal-title fs-5" id="exampleModalLabel" id="show_task_notes">Notes</h1>
                 <button
                     type="button"
@@ -224,6 +226,8 @@
                 </a>
                 <form id="task-closed-form{{$task->id}}" method="POST" action="{{ route('tasks.closed', ['task' => $task->id]) }}">
                     @csrf
+                    <input type="text" name="locale" id="form_locale">
+
                 </form>
             </div>
         </div>

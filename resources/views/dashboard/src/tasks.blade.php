@@ -191,6 +191,8 @@
                     <form id="task-delete-form{{$task->id}}" method="POST" action="{{ route('tasks.destroy', ['task' => $task->id]) }}">
                         @csrf
                         @method('DELETE')
+                        <input type="hidden" name="locale" id="form_locale_delete">
+
                     </form>
                 </div>
             </div>

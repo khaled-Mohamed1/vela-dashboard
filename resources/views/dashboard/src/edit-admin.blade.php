@@ -30,6 +30,7 @@
             onsubmit="(e)=>e.preventDefault()"
             enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="locale" id="form_locale">
 
 
             <div class="col-md-6">
