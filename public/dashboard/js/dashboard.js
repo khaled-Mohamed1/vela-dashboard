@@ -28,6 +28,8 @@ window.onload = function(){
       dash_meeting.textContent = "الإجتماع";
       dash_admins.textContent = "المشرفين";
       dash_employees.textContent = "الموظفين";
+      dash_chats.textContent = "المحادثات الفردية";
+      dash_groups_chats.textContent = "المحادثات الجماعية";
       document.querySelector('#dash_profile img').style.margin = "0 0 0 5px";
       logout.style.marginLeft = '0';
       logout.style.marginRight = 'auto';
@@ -41,7 +43,7 @@ function changeModalLang(){
   if(localStorage.getItem("vela-dash-lang") == "ar"){
     document.querySelector('#dash_exit_content') ? document.querySelectorAll('#dash_exit_content').forEach(e => e.textContent = "هل تريد تسجيل الخروج؟") : '';
     document.querySelectorAll('#delete_modal_no').forEach(e => e.textContent = "لا");
-    document.querySelectorAll('#delete_modal_no').forEach(e => e.textContent = "نعم");
+    document.querySelectorAll('#delete_modal_yes').forEach(e => e.textContent = "نعم");
   }
 }
 
@@ -78,6 +80,8 @@ links.forEach(function(el){
 sidebarLinks('#reports-link', 'http://127.0.0.1:8000/admin/dashboard/reports');
 sidebarLinks('#users-link', 'http://127.0.0.1:8000/admin/dashboard/users');
 sidebarLinks('#admins-link', 'http://127.0.0.1:8000/admin/dashboard/admins');
+sidebarLinks('#chats-link', 'http://127.0.0.1:8000/admin/dashboard/chats');
+sidebarLinks('#groups-chats-link', 'http://127.0.0.1:8000/admin/dashboard/group_chats');
 // sidebarLinks('#companies-link', 'http://127.0.0.1:8000/admin/dashboard/companies');
 
 function sidebarLinks(id, dest){

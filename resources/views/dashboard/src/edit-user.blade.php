@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Vela: الموظفين تعديل</title>
+      <title>Vela: تعديل الموظف</title>
     <!-- Google Fonts Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -71,12 +71,24 @@
             </div>
 
             <div class="col-md-12">
+                <div class="form-check form-switch" style="display: flex; gap: 50px;" id="form_add_private_wrapper">
+                    <input class="form-check-input" name="private_status" {{$user->private_status === 1 ? 'checked' : ''}} type="checkbox" role="switch" id="flexSwitchCheckChecked">
+                    <div>
+                        <label class="form-check-label" for="flexSwitchCheckChecked" id="form_add_private">Enable private chat</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-12">
                 <label for="formFile" class="form-label" id="form_add_pp">Profile Picture <span style="color:red;">*</span></label>
                 <input class="form-control @error('image') is-invalid @enderror" name="image" type="file" id="image" />
                 @error('image')
                 <span class="text-danger">{{$message}}</span>
                 @enderror
             </div>
+
+
 
 
 

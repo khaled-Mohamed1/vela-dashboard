@@ -9,46 +9,41 @@ class Conversation extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id', 'label', 'type', 'last_message_id',
+    protected $connection = 'mysql_2';
+    protected $table = 'conversations';
+
+    protected $fillable=[
+        'name',
+        'image',
+        'type',
+        'last_time_message',
+        'admin_id',
+        'sender_id',
+        'receiver_id',
+        'company_NO',
+        'company_group'
     ];
 
-    public function participants()
+    public function SenderConversation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsToMany(User::class, 'participants')
-            ->withPivot([
-                'joined_at', 'role'
-            ]);
+
+        return $this->belongsTo(User::class, 'sender_id', 'id');
     }
 
-    public function recipients()
+    public function ReceiverConversation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->hasManyThrough(
-            Recipient::class, 
-            Message::class, 
-            'conversation_id', 
-            'message_id', 
-            'id', 
-            'id'
-        );
+        return $this->belongsTo(User::class, 'receiver_id', 'id');
     }
 
-    public function messages()
+    public function usersConversation()
     {
-        return $this->hasMany(Message::class, 'conversation_id', 'id');
+        return $this->hasMany(Participant::class , 'conversations_id' , 'id');
     }
 
-    public function user()
+    public function messages(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->hasMany(Message::class, 'conversations_id' , 'id');
     }
 
-    public function lastMessage()
-    {
-        return $this->belongsTo(Message::class, 'last_message_id', 'id')
-            ->whereNull('deleted_at')
-            ->withDefault([
-                'body' => 'Message deleted'
-            ]);
-    }
+
 }

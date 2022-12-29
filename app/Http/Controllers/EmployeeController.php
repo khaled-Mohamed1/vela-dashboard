@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Conversation;
+use App\Models\Participant;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
@@ -18,6 +20,8 @@ class EmployeeController extends Controller
      */
     public function index()
     {
+
+
         if(auth()->user()->role_id == 1){
             $users = User::where('role_id',3)->orderBy('id','DESC')->paginate(5);
         }else{
@@ -52,7 +56,6 @@ class EmployeeController extends Controller
         // Determine the current language
         $language = App::getLocale();
 
-
         if ($language == 'en') {
             $this->validate($request, [
                 'full_name' => 'required',
@@ -81,9 +84,8 @@ class EmployeeController extends Controller
                     'job.required' => 'يجب ادخال وظيفة المشرف!',
                     'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
                     'image.required' => 'يجب ادخال صورة المشرف!',
-                ]);        }
-
-
+                ]);
+        }
 
         DB::beginTransaction();
         try {
@@ -108,6 +110,14 @@ class EmployeeController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
+
+            //add the employee to group
+            $conversation = Conversation::where('company_group', auth()->user()->company_NO)->first();
+
+            $participant = Participant::create([
+                'conversations_id' => $conversation->id,
+                'user_id' => $user->id
+            ]);
 
             if ($language == 'en') {
                 return redirect()->route('users')->with('success','Employee Created Successfully');
@@ -188,6 +198,15 @@ class EmployeeController extends Controller
 
             // Commit And Redirected To Listing
             DB::commit();
+
+            //add the employee to group
+            $conversation = Conversation::where('company_group', $admin->company_NO)->first();
+
+            $participant = Participant::create([
+                'conversations_id' => $conversation->id,
+                'user_id' => $user->id
+            ]);
+
             if ($language == 'en') {
                 return redirect()->route('users')->with('success','Employee Created Successfully');
             } elseif ($language == 'ar') {
@@ -218,6 +237,7 @@ class EmployeeController extends Controller
     public function update(Request $request, User $user)
     {
 
+
         App::setLocale($request->input('locale'));
 
         // Determine the current language
@@ -228,7 +248,7 @@ class EmployeeController extends Controller
                 'full_name' => 'required',
                 'email' => 'required|unique:users,email,'.$user->id.',id',
                 'job' => 'required',
-                'phone_NO' => 'required|numeric|digits:10',
+                'phone_NO' => 'required|numeric',
             ],
                 );
         } elseif ($language == 'ar') {
@@ -236,7 +256,7 @@ class EmployeeController extends Controller
                 'full_name' => 'required',
                 'email' => 'required|unique:users,email,'.$user->id.',id',
                 'job' => 'required',
-                'phone_NO' => 'required|numeric|digits:10',
+                'phone_NO' => 'required|numeric',
             ],
                 [
                     'full_name.required' => 'يجب ادخال اسم المشرف!',
@@ -246,7 +266,6 @@ class EmployeeController extends Controller
                     'job.required' => 'يجب ادخال وظيفة المشرف!',
                     'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
                     'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
-                    'phone_NO.digits' => 'رقم الجوال يتكون من 10 ارقام!',
                 ]);
         }
 
@@ -255,12 +274,19 @@ class EmployeeController extends Controller
         DB::beginTransaction();
         try {
 
+            if($request->private_status == null){
+                $private_status = false;
+            }else{
+                $private_status = true;
+            }
+
             $user = User::find($user->id);
 
             $user->full_name = $request->full_name;
             $user->email = $request->email;
             $user->phone_NO = $request->phone_NO;
             $user->job = $request->job;
+            $user->private_status = $private_status;
 
             if ($request->image) {
                 // Public storage

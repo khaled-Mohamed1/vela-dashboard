@@ -59,6 +59,11 @@ window.onload = function () {
         document.querySelector("#show_task_working") ? document.querySelectorAll("#show_task_working").forEach(e => e.textContent = 'لم يتم انجاز المهمة'): '';
         document.querySelector("#show_task_add_note") ? show_task_add_note.textContent = 'إضافة ملاحظة:': '';
         document.querySelector("#show_task_note_area") ? show_task_note_area.placeholder = 'إضافة ملاحظة': '';
+          document.querySelector("#p2p_conversation") ? p2p_conversation.textContent = 'المحادثة': '';
+          document.querySelector("#groups_users") ? groups_users.textContent = 'المستخدمين': '';
+          document.querySelector("#groups_users_search") ? groups_users_search.placeholder = 'بحث': '';
+        document.querySelector("#form_add_private") ? form_add_private.textContent = 'تفعيل المحادثة المشفرة': '';
+        document.querySelector("#form_add_private_wrapper") ? form_add_private_wrapper.style.gap = '10px' : '50px';
       }
       // END CHANGE LANGUAGE
 };
@@ -67,5 +72,20 @@ function getPaddinglocalStorage() {
         document.body.classList.add("body-padding-top");
     } else {
         document.body.classList.remove("body-padding-top");
+    }
+}
+
+function changeModalLang(){
+    if(localStorage.getItem("vela-dash-lang") == "ar"){
+        document.querySelector('#delete_modal_content') ? document.querySelectorAll('#delete_modal_content').forEach(e => e.textContent = "هل تريد حذف المشرف") : '';
+        document.querySelector('#tasks_delete_modal_content') ? document.querySelectorAll('#tasks_delete_modal_content').forEach(e => e.textContent = "هل تريد حذف المهمة") : '';
+        document.querySelector('#user_delete_modal_content') ? document.querySelectorAll('#user_delete_modal_content').forEach(e => e.textContent = "هل تريد حذف الموظف") : '';
+        document.querySelectorAll('#questionMark').forEach(e => e.textContent = "؟");
+        document.querySelectorAll('#delete_modal_no').forEach(e => e.textContent = "لا");
+        document.querySelectorAll('#delete_modal_yes').forEach(e => e.textContent = "نعم");
+        document.querySelectorAll('#form_locale_delete').forEach(e => e.value = "ar");
+    }else{
+        document.querySelectorAll('#form_locale_delete').forEach(e => e.value = "en");
+
     }
 }

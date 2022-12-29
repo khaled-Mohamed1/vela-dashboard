@@ -47,6 +47,11 @@ window.onload = function () {
     document.querySelector("#tasks_delete") ? document.querySelectorAll("#tasks_delete").forEach(e => e.textContent = "حذف") : '';
     document.querySelector("#emp_heading") ? emp_heading.textContent = "الموظفين" : '';
     document.querySelector("#emp_add_emp") ? document.querySelectorAll("#emp_add_emp").forEach(e => e.textContent = "+ إضافة موظف") : '';
+      document.querySelector("#p2pchats_heading") ? p2pchats_heading.textContent = "المحادثات الفردية" : '';
+      document.querySelector("#p2pchats_showconv") ? document.querySelectorAll("#p2pchats_showconv").forEach(e => e.textContent = "عرض المحادثة") : '';
+      document.querySelector("#groups_heading") ? groups_heading.textContent = "المحادثات الجماعية" : '';
+      document.querySelector("#groups_users_count") ? document.querySelectorAll("#groups_users_count").forEach(e => e.textContent = "عدد المستخدمين") : '';
+      document.querySelector("#groups_show_conversation") ? document.querySelectorAll("#groups_show_conversation").forEach(e => e.textContent = "عرض المستخدمين والمحادثة") : '';
   }
   // END CHANGE LANGUAGE
 

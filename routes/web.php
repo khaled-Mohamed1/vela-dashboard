@@ -40,6 +40,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/admin/dashboard/users/store',[EmployeeController::class, 'store'])->name('users.store');
     Route::get('/admin/dashboard/users/edit/{user}',[EmployeeController::class, 'edit'])->name('users.edit');
     Route::get('/admin/dashboard/users/profile/{user}',[EmployeeController::class, 'show'])->name('users.show');
+
+
     Route::post('/admin/dashboard/users/update/{user}',[EmployeeController::class, 'update'])->name('users.update');
     Route::delete('/admin/dashboard/users/delete/{user}',[EmployeeController::class, 'destroy'])->name('users.destroy');
 
@@ -57,6 +59,12 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::post('/admin/dashboard/admins/update/{user}',[UserController::class, 'update'])->name('admins.update');
     Route::delete('/admin/dashboard/admins/delete/{user}',[UserController::class, 'destroy'])->name('admins.destroy');
+
+    Route::get('/admin/dashboard/chats',[UserController::class, 'conversation'])->name('admins.conversation');
+    Route::get('/admin/dashboard/chat/{conversation}',[UserController::class, 'showConversation'])->name('admins.conversation.show');
+
+    Route::get('/admin/dashboard/group_chats',[UserController::class, 'groupsConversation'])->name('admins.groups_conversation');
+    Route::get('/admin/dashboard/group_chat/{conversation}',[UserController::class, 'showGroupsConversation'])->name('admins.groups_conversation.show');
 
 
 

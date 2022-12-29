@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>الأنابيب</title>
+    <title>Vela: صفحة الشخصية للمشرف</title>
     <!-- Google Fonts Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{asset('dashboard/css/bootstrap.rtl.min.css')}}" />
     <link rel="stylesheet" href="{{asset('dashboard/css/forms-style.css')}}" />
     <style>
-        small { 
+        small {
             color: #a4a4a4;
         }
     </style>

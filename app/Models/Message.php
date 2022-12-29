@@ -10,31 +10,29 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'conversation_id', 'user_id', 'body', 'type',
+    protected $connection = 'mysql_2';
+    protected $table = 'messages';
+
+    protected $fillable=[
+        'user_id',
+        'conversations_id',
+        'message',
+        'read',
+        'is_image',
+        'is_file',
+        'is_voice',
+        'is_poll',
+        'parent_id'
     ];
 
-    protected $casts = [
-        'body' => 'json',
-    ];
-
-    public function conversation()
+    public function MessageConversation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Conversation::class);
+        return $this->belongsTo(Conversation::class, 'conversations_id', 'id');
     }
 
-    public function user()
+    public function MessageUser(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(User::class)->withDefault([
-            'name' => __('User')
-        ]);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function recipients()
-    {
-        return $this->belongsToMany(User::class, 'recipients')
-            ->withPivot([
-                'read_at', 'deleted_at',
-            ]);
-    }
 }

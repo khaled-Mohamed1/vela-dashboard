@@ -13,12 +13,15 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable,HasRoles;
-    use SoftDeletes;
+//    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      *
      * @var string[]
      */
+    protected $connection = 'mysql';
+
+
     protected $fillable = [
         'full_name',
         'email',
@@ -58,18 +61,14 @@ class User extends Authenticatable
         'avatar_url',
     ];
 
-    public function conversations()
+    public function UserSConversation(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->belongsToMany(Conversation::class, 'participants')
-            ->latest('last_message_id')
-            ->withPivot([
-                'role', 'joined_at'
-            ]);
+        return $this->hasMany(Conversation::class,'sender_id','id');
     }
 
-    public function sentMessages()
+    public function UserRConversation(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Message::class, 'user_id', 'id');
+        return $this->hasMany(Conversation::class,'receiver_id','id');
     }
 
     public function taskAdmins()
@@ -104,7 +103,7 @@ class User extends Authenticatable
                 'read_at', 'deleted_at',
             ]);
     }
-
+//
     public function getAvatarUrlAttribute()
     {
         return 'https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=' . $this->name;

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Conversation;
+use App\Models\Participant;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
@@ -18,6 +21,9 @@ class UserController extends Controller
      */
     public function index()
     {
+
+//        $cn = Conversation::where('company_NO', auth()->user()->company_NO)->orWhere('company_group', auth()->user()->company_NO)->get();
+
         if(auth()->user()->role_id == 1){
             $users = User::where('role_id',2)->orderBy('id','DESC')->paginate(5);
 
@@ -26,6 +32,8 @@ class UserController extends Controller
         }
         return view('dashboard/src/admins',compact('users'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -105,15 +113,30 @@ class UserController extends Controller
                 'company_name'    => $request->company_name,
                 'company_NO'    => $randomString,
                 'image' => 'https://velatest.pal-lady.com/storage/app/public/admins/' .$imageName,
-                'role_id' => '2'
+                'role_id' => '2',
+                'private_status' => true
             ]);
 
             $user->assignRole(2);
 
             Storage::disk('public')->put('admins/' . $imageName, file_get_contents($request->image));
+            DB::commit();
+
+            //create conversation
+            $conversation = Conversation::create([
+                'name' => $request->company_name,
+                'type' => 'group',
+                'admin_id' => $user->id,
+                'company_group' => $randomString,
+            ]);
+
+            //add the admin in Participant table
+            $participant = Participant::create([
+                'conversations_id' => $conversation->id,
+                'user_id' => $user->id
+            ]);
 
             // Commit And Redirected To Listing
-            DB::commit();
 
             if ($language == 'en') {
                 return redirect()->route('admins')->with('success','Admin created successfully');
@@ -175,7 +198,7 @@ class UserController extends Controller
                 'full_name' => 'required',
                 'email' => 'required|unique:users,email,'.$user->id.',id',
                 'job' => 'required',
-                'phone_NO' => 'required|numeric|digits:10',
+                'phone_NO' => 'required|numeric',
                 'company_name' => 'required',
             ],
                 );
@@ -184,7 +207,7 @@ class UserController extends Controller
                 'full_name' => 'required',
                 'email' => 'required|unique:users,email,'.$user->id.',id',
                 'job' => 'required',
-                'phone_NO' => 'required|numeric|digits:10',
+                'phone_NO' => 'required|numeric',
                 'company_name' => 'required',
             ],
                 [
@@ -195,7 +218,7 @@ class UserController extends Controller
                     'job.required' => 'يجب ادخال وظيفة المشرف!',
                     'phone_NO.required' => 'يجب ادخال رقم جوال المشرف!',
                     'phone_NO.numeric' => 'يجب ادخال رقم الجوال بالأرقام!',
-                    'phone_NO.digits' => 'رقم الجوال يتكون من 10 ارقام!',
+//                    'phone_NO.digits' => 'رقم الجوال يتكون من 10 ارقام!',
                     'company_name.required' => 'يجب ادخال اسم الشركة!',
                 ]);        }
 
@@ -291,6 +314,37 @@ class UserController extends Controller
             DB::rollBack();
             return redirect()->back()->withInput()->with('error', $th->getMessage());
         }
+    }
+
+
+    public function conversation()
+    {
+        $conversations = Conversation::where('type', 'peer')->where('company_NO', auth()->user()->company_NO)
+            ->latest()->get();
+        return view('dashboard/src/p2p-conversation',['conversations' => $conversations]);
+    }
+
+    public function showConversation(Conversation $conversation)
+    {
+        return view('dashboard/src/show_p2p_conversation',[
+            'conversation' => $conversation
+        ]);
+    }
+
+    public function groupsConversation()
+    {
+        $conversations = Conversation::where('type', 'group')->where('company_NO', auth()->user()->company_NO)
+            ->orWhere('company_group', auth()->user()->company_NO)
+            ->latest()->get();
+
+        return view('dashboard/src/groups-conversations',['conversations' => $conversations]);
+    }
+
+    public function showGroupsConversation(Conversation $conversation)
+    {
+        return view('dashboard/src/show_groups-conversations',[
+            'conversation' => $conversation
+        ]);
     }
 
 }

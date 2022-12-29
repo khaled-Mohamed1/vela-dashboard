@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>الأنابيب</title>
+    <title>Vela: صفحة المهمة</title>
     <!-- Google Fonts Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -112,6 +112,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#closedModal"
                             id="show_task_close"
+                            onclick="changeModalLang()"
                         {{ $task->userTask->every('status', 1) ? '' : 'disabled' }}>Close Task</button>
                 @endif
 
@@ -212,7 +213,7 @@
                     aria-label="Close"
                 ></button>
             </div>
-            <div class="modal-body">هل تريد انهاء المهمة<span class="text-vela">{{$task->title}}</span> ؟</div>
+            <div class="modal-body"><span id="close_modal_content">Are you sure you want to close</span> <span class="text-vela">{{$task->title}}</span><span id="questionMark">?</span></div>
             <div class="modal-footer">
                 <button
                     type="button"

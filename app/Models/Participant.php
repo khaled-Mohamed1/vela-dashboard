@@ -10,19 +10,22 @@ class Participant extends Pivot
 {
     use HasFactory;
 
-    public $timestamps = false;
+    protected $connection = 'mysql_2';
+    protected $table = 'participants';
 
-    protected $casts = [
-        'joined_at' => 'datetime',
+    protected $fillable = [
+        'user_id',
+        'conversations_id',
     ];
 
-    public function conversation()
+
+    public function ConversationParticipant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Conversation::class);
+        return $this->belongsTo(Conversation::class, 'conversations_id', 'id');
     }
 
-    public function user()
+    public function UserParticipant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

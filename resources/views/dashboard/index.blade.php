@@ -160,6 +160,19 @@
 {{--                              </a>--}}
 {{--                          </li>--}}
 
+                          <li class="nav-item">
+                              <a id="chats-link" class="nav-link" title="Chats">
+                                  <i class="fa-solid fa-comment"></i>
+                                  <span class="nav-link-name" id="dash_chats">Peer to Peer Chats</span>
+                              </a>
+                          </li>
+
+                          <li class="nav-item">
+                              <a id="groups-chats-link" class="nav-link" title="Chats">
+                                  <i class="fa-solid fa-comments"></i>
+                                  <span class="nav-link-name" id="dash_groups_chats">Groups Chats</span>
+                              </a>
+                          </li>
 
                           <li class="nav-item">
                               <a id="users-link" class="nav-link" title="Employees">
@@ -167,6 +180,8 @@
                                   <span class="nav-link-name" id="dash_employees">Employees</span>
                               </a>
                           </li>
+
+
                           <li class="nav-item">
                             <div class="select-lang">
                             <i class="fa-solid fa-language" style="font-size: 21px;"></i>

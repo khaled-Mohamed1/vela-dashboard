@@ -103,3 +103,16 @@ body {
     background-color: var(--main-color);
     color: #fff;
 }
+
+.groups-users{
+    background-color: #eee;
+    border-radius: 0.5rem;
+    padding: 10px 20px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    height: 200px;
+    overflow: auto;
+    justify-content: space-between;
+    align-items: center;
+}
