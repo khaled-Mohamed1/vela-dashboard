@@ -334,7 +334,7 @@ class UserController extends Controller
     public function groupsConversation()
     {
         $conversations = Conversation::where('type', 'group')->where('company_NO', auth()->user()->company_NO)
-            ->orWhere('company_group', auth()->user()->company_NO)
+//            ->orWhere('company_group', auth()->user()->company_NO)
             ->latest()->get();
 
         return view('dashboard/src/groups-conversations',['conversations' => $conversations]);

@@ -132,24 +132,24 @@
                           </li>
 {{--                          @hasrole('Super Admin')--}}
 
-                          <li class="nav-item">
-                              <a id="tubes-link" class="nav-link" title="Contact">
-                                  <i class="fa-solid fa-phone-volume"></i>
-                                  <span class="nav-link-name" id="dash_contact">Contact</span>
-                              </a>
-                          </li>
-                          <li class="nav-item">
-                              <a id="store-link" class="nav-link" title="Meeting">
-                                  <i class="fa-solid fa-video"></i>
-                                  <span class="nav-link-name" id="dash_meeting">Meeting</span>
-                              </a>
-                          </li>
+{{--                          <li class="nav-item">--}}
+{{--                              <a id="tubes-link" class="nav-link" title="Contact">--}}
+{{--                                  <i class="fa-solid fa-phone-volume"></i>--}}
+{{--                                  <span class="nav-link-name" id="dash_contact">Contact</span>--}}
+{{--                              </a>--}}
+{{--                          </li>--}}
+{{--                          <li class="nav-item">--}}
+{{--                              <a id="store-link" class="nav-link" title="Meeting">--}}
+{{--                                  <i class="fa-solid fa-video"></i>--}}
+{{--                                  <span class="nav-link-name" id="dash_meeting">Meeting</span>--}}
+{{--                              </a>--}}
+{{--                          </li>--}}
 {{--                          @endhasrole--}}
 
                           <li class="nav-item">
                               <a id="admins-link" class="nav-link" title="Admins">
                                   <i class="fa-solid fa-user-tie"></i>
-                                  <span class="nav-link-name" id="dash_admins">Admins</span>
+                                  <span class="nav-link-name" id="dash_admins">Admins Company</span>
                               </a>
                           </li>
 
@@ -159,6 +159,7 @@
 {{--                                  <span class="nav-link-name">المحادثات</span>--}}
 {{--                              </a>--}}
 {{--                          </li>--}}
+                          @hasrole('Admin')
 
                           <li class="nav-item">
                               <a id="chats-link" class="nav-link" title="Chats">
@@ -167,12 +168,14 @@
                               </a>
                           </li>
 
+
                           <li class="nav-item">
                               <a id="groups-chats-link" class="nav-link" title="Chats">
                                   <i class="fa-solid fa-comments"></i>
                                   <span class="nav-link-name" id="dash_groups_chats">Groups Chats</span>
                               </a>
                           </li>
+                          @endhasrole
 
                           <li class="nav-item">
                               <a id="users-link" class="nav-link" title="Employees">
@@ -180,7 +183,6 @@
                                   <span class="nav-link-name" id="dash_employees">Employees</span>
                               </a>
                           </li>
-
 
                           <li class="nav-item">
                             <div class="select-lang">

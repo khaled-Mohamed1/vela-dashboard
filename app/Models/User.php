@@ -35,7 +35,7 @@ class User extends Authenticatable
         'company_name',
         'role_id',
         'status',
-        'private_status'
+        'private_status',
     ];
 
     /**

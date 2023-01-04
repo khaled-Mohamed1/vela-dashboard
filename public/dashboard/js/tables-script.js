@@ -20,7 +20,7 @@ window.onload = function () {
     document.querySelector("#admins_search") ? admins_search.style.borderRadius = '0 .375rem .375rem 0' : '';
   } else {
     document.documentElement.dir = "rtl";
-    document.querySelector("#heading_admins") ? heading_admins.textContent = "المشرفين" : '';
+    document.querySelector("#heading_admins") ? heading_admins.textContent = "مشرفين الشركات" : '';
     document.querySelector("#add_admin") ? add_admin.textContent = "+ إضافة مشرف" : '';
     document.querySelector("#admins_search") ? admins_search.placeholder = "بحث" : '';
     if(document.querySelector("#show_admin_picture")){
