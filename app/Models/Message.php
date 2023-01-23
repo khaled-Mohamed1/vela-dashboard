@@ -35,4 +35,9 @@ class Message extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function polls(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Poll::class);
+    }
+
 }

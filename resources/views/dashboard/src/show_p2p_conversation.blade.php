@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-<div class="table-container section-style">
+<div class="table-container section-style chat-section-style">
     <div style="padding-right: 20px">
         <div class="row">
             <h2 style="padding-bottom: 15px;" id="p2p_conversation">Conversation</h2>
@@ -35,7 +35,48 @@
                                     $conversation->SenderConversation->full_name :
                                      $conversation->ReceiverConversation->full_name}}
                             </small>
-                            <div class="note">{{$message->message}}</div>
+                            @if($message->parent_id)
+                                @php
+                                    $parentMessage =\App\Models\Message::find($message->parent_id);
+                                @endphp
+                                @if($parentMessage->is_image)
+                                    <div class="note" style="background-color: rgb(226,34,37,.5); font-size: 12px; width: fit-content">Reply Image</div>
+                                @elseif($parentMessage->is_file)
+                                    <div class="note" style="background-color: rgb(226,34,37,.5); font-size: 12px; width: fit-content">Reply File</div>
+                                @elseif($parentMessage->is_poll)
+                                    <div class="note" style="background-color: rgb(226,34,37,.5); font-size: 12px; width: fit-content">Reply Poll</div>
+                                @elseif($parentMessage->is_voice)
+                                    <div class="note" style="background-color: rgb(226,34,37,.5); font-size: 12px; width: fit-content;">Reply Voice</div>
+                                @else
+                                    <div class="note" style="background-color: rgb(226,34,37,.5); font-size: 12px; width: fit-content">{{$parentMessage->message}}</div>
+                                @endif
+                            @endif
+                            @if($message->is_image)
+                                <img src="{{$message->message}}" alt="" width="100%">
+                            @elseif($message->is_file)
+                                @php
+                                    $pieces = explode("/",$message->message);
+                                    $length = count($pieces);
+                                    $result = $pieces[$length - 1];
+                                @endphp
+                                <div class="note"><a style="word-break: break-all; text-decoration: none; color: {{$message->user_id == $conversation->SenderConversation->id ? '#eee' : '#000'}};"  href="{{$message->message}}" download>{{$result}}</a></div>
+                            @elseif($message->is_voice)
+                                <audio controls style="width: 100%">
+                                    <source src="{{$message->message}}" type="audio/ogg">
+                                </audio>
+                            @elseif($message->is_poll)
+                                <div class="note">
+                                    <p style="font-size: 20px">{{$message->message}}</p>
+                                    @foreach($message->polls as $key => $poll)
+                                        <div style="display: flex; justify-content: space-around; align-items: center">
+                                            <span> {{$poll->rate}} </span>
+                                            <span style="width: 80px">{{$poll->poll_options}}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="note">{{$message->message}}</div>
+                            @endif
                         </div>
                     @endforeach
                 </div>

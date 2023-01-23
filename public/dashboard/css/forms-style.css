@@ -50,6 +50,9 @@ body {
   border-radius: 0.5rem;
   box-shadow: 6px 6px 3px rgb(0, 0, 0, 0.1);
 }
+.chat-section-style{
+    width: 100%;
+}
 .form-control:focus,
 .form-select:focus {
   border-color: #ff9597;
@@ -70,7 +73,7 @@ body {
 .note-wrapper {
     border: 1px solid #eee;
     border-radius: 0.5rem;
-    height: 410px;
+    height: 551px !important;
     overflow: auto;
     padding: 10px;
     display: flex;
