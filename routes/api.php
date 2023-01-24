@@ -37,6 +37,7 @@ Route::post('messages', [MessagesController::class, 'store'])
 Route::delete('messages/{id}', [MessagesController::class, 'destroy']);
 //});
 
+Route::post('user/verify',[AuthController::class, 'cube_register']);
 
 Route::group([
 

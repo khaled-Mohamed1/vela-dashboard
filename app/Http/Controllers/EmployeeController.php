@@ -32,6 +32,7 @@ class EmployeeController extends Controller
 
     public function create()
     {
+
         return view('dashboard/src/add-user');
     }
 
@@ -50,7 +51,6 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-
         App::setLocale($request->input('locale'));
 
         // Determine the current language
@@ -64,7 +64,7 @@ class EmployeeController extends Controller
                 'job' => 'required',
                 'phone_NO' => 'required',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ],
+            ]
                 );
         } elseif ($language == 'ar') {
             $this->validate($request, [
@@ -104,14 +104,35 @@ class EmployeeController extends Controller
                 'role_id' => '3'
             ]);
 
-            $user->assignRole(2);
+//            $client = new \GuzzleHttp\Client();
+//            $url = 'https://velatest.pal-lady.com/api/user/verify';
+//
+//            $form_params = [
+//                'email'             => $request->email,
+//                'password'    =>bcrypt($request->password),
+//                'login'     => $request->full_name,
+//            ];
+//
+//           $response = $client->post($url, ['form_params' => $form_params]);
+//            $response = $response->getBody()->getContents();
+
+            $user->assignRole(3);
 
             Storage::disk('public')->put('employee/' . $imageName, file_get_contents($request->image));
 
             // Commit And Redirected To Listing
             DB::commit();
 
-            //add the employee to group
+            $details = [
+                'title' => 'Mail from vela app',
+                'body' => ['email' => $user->email,
+                    'phone' => $user->phone_NO,
+                    'password' => $request->password]
+            ];
+
+            \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
+
+//            //add the employee to group
             $conversation = Conversation::where('company_group', auth()->user()->company_NO)->first();
 
             $participant = Participant::create([
@@ -149,7 +170,7 @@ class EmployeeController extends Controller
                 'phone_NO' => 'required',
                 'user_id' => 'required',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ],
+            ]
                 );
         } elseif ($language == 'ar') {
             $this->validate($request, [
@@ -180,6 +201,7 @@ class EmployeeController extends Controller
 
             $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
             $admin = User::where('id',$request->user_id)->first();
+
             $user = User::create([
                 'full_name' => $request->full_name,
                 'email'    => $request->email,
@@ -192,12 +214,24 @@ class EmployeeController extends Controller
                 'role_id' => '3'
             ]);
 
+
+
             $user->assignRole(3);
 
             Storage::disk('public')->put('employee/' . $imageName, file_get_contents($request->image));
 
             // Commit And Redirected To Listing
             DB::commit();
+
+            $details = [
+                'title' => 'Mail from vela app',
+                'body' => ['Email:' => $user->email,
+                    'Phone' => $user->phone_NO,
+                    'Password' => $request->password]
+            ];
+
+            \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
+
 
             //add the employee to group
             $conversation = Conversation::where('company_group', $admin->company_NO)->first();

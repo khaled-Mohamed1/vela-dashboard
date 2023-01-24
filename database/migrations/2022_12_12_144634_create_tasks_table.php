@@ -16,9 +16,7 @@ class CreateTasksTable extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('admin_id')->unsigned();
-            $table->foreign('admin_id')->references('id')->on('users');
-//            $table->bigInteger('user_id')->unsigned();
-//            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('admin_id')->references('id')->on('users')->cascadeOnDelete();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->date('start_date')->nullable();

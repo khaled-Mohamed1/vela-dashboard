@@ -23,6 +23,13 @@ Route::get('/',function (){
     return redirect()->route('login');
 });
 
+Route::get('/clear-cache-all', function() {
+    \Artisan::call('cache:clear');
+
+    \Artisan::call('view:clear');
+    \Artisan::call('config:clear');
+});
+
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/admin/dashboard',function (){
         return view('dashboard/index');

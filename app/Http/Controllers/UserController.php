@@ -67,7 +67,7 @@ class UserController extends Controller
                 'phone_NO' => 'required',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'company_name' => 'required',
-            ],
+            ]
             );
         } elseif ($language == 'ar') {
             $this->validate($request, [
@@ -118,13 +118,21 @@ class UserController extends Controller
             ]);
 
             $user->assignRole(2);
-
-            Storage::disk('public')->put('admins/' . $imageName, file_get_contents($request->image));
             DB::commit();
+            Storage::disk('public')->put('admins/' . $imageName, file_get_contents($request->image));
 
-            //create conversation
-            $conversation = Conversation::create([
+            $details = [
+                'title' => 'Mail from vela app',
+                'body' => ['email' => $user->email,
+                    'phone' => $user->phone_NO,
+                    'password' => $request->password]
+            ];
+
+            \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
+
+            $conversation =Conversation::create([
                 'name' => $request->company_name,
+                'image' => $user->image,
                 'type' => 'group',
                 'admin_id' => $user->id,
                 'company_group' => $randomString,
@@ -135,6 +143,8 @@ class UserController extends Controller
                 'conversations_id' => $conversation->id,
                 'user_id' => $user->id
             ]);
+
+
 
             // Commit And Redirected To Listing
 

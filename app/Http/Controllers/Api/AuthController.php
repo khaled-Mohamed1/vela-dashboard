@@ -11,7 +11,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','loginCompany','logout','getUsers']]);
+        $this->middleware('auth:api', ['except' => ['login','loginCompany','logout','getUsers','cube_register']]);
     }
 
     public function loginCompany(Request $request)
@@ -107,6 +107,24 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'users' => $users,
+            ], 200);
+        } catch (\Exception $e) {
+            // Return Json Response
+            return response()->json([
+                'message' => "Something went really wrong!"
+            ], 500);
+        }
+    }
+
+
+    public function cube_register(Request  $request)
+    {
+      // dd($request->all());
+
+        try {
+
+            return response()->json([
+                'user' => $request->all(),
             ], 200);
         } catch (\Exception $e) {
             // Return Json Response
