@@ -59,7 +59,8 @@
 
                                         <p>رقم الجوال: {{ $details['body']['phone'] }}</p>
                                         <p>البريد الإلكرتوني: {{ $details['body']['email'] }}</p>
-                                        <p>كلمة السر: {{ $details['body']['password'] }}</p>
+                                        <p>كلمة المرور: {{ $details['body']['password'] }}</p>
+                                        <p>رقم الشركة: {{ $details['body']['company_NO'] }}</p>
 
                                     </td>
                                     <td width="30">&nbsp;</td>

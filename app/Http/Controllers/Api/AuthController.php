@@ -55,7 +55,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'phone_NO' => 'required',
+            'login' => 'required',
             'password' => 'required|string',
             'company_NO' => 'required|numeric|digits:6',
         ]);
@@ -63,6 +63,7 @@ class AuthController extends Controller
         $credentials = $request->only('password', 'phone_NO','company_NO');
 
         $token = Auth::attempt($credentials);
+
         if (!$token) {
             return response()->json([
                 'status' => 'error',
@@ -71,9 +72,13 @@ class AuthController extends Controller
             ], 401);
         }
 
-//        $user = Auth::user();
-        $user = User::where('phone_NO', $request->phone_NO)
-            ->where('company_NO', $request->company_NO)->first();
+        $user  = User::where(function ($query)use ($request){
+            $query->where('phone_NO', $request->login);
+            $query->where('company_NO', $request->company_NO);
+        })->orWhere(function ($query) use ($request){
+            $query->where('email', $request->login);
+            $query->where('company_NO', $request->company_NO);
+        })->first();
 
         return response()->json([
             'status' => 'success',

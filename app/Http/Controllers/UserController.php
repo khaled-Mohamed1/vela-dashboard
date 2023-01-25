@@ -125,12 +125,13 @@ class UserController extends Controller
                 'title' => 'Mail from vela app',
                 'body' => ['email' => $user->email,
                     'phone' => $user->phone_NO,
-                    'password' => $request->password]
+                    'password' => $request->password,
+                    'company_NO' => $user->company_NO]
             ];
 
             \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
 
-            $conversation =Conversation::create([
+            $conversation = Conversation::create([
                 'name' => $request->company_name,
                 'image' => $user->image,
                 'type' => 'group',
