@@ -36,6 +36,7 @@ class User extends Authenticatable
         'role_id',
         'status',
         'private_status',
+        'connecty_cube_id',
     ];
 
     /**
@@ -85,6 +86,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(TaskNote::class, 'user_id', 'id');
     }
+
+    public function meetUser()
+    {
+        return $this->hasMany(Meet::class, 'user_id', 'id');
+    }
+
 
     public function taskAdminNotes()
     {

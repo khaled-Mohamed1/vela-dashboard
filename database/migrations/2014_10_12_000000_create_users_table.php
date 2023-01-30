@@ -29,6 +29,7 @@ class CreateUsersTable extends Migration
             $table->integer('role_id')->nullable();
             $table->string('status')->default('offline');
             $table->boolean('private_status')->default(false);
+            $table->string('connecty_cube_id')->unique()->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

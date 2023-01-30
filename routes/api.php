@@ -3,6 +3,7 @@
 use App\Http\Controllers\ConversationsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\MessagesController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
@@ -83,6 +84,24 @@ Route::group([
 
 
     });
+
+});
+
+Route::GET('/connecty_cube_users', function() {
+
+    try {
+        $users = User::select('id', 'full_name', 'email', 'connecty_cube_id')
+            ->where('role_id', '!=', '1')->latest()->get();
+        return response()->json([
+            'status' => true,
+            'users' => $users,
+        ], 200);
+    } catch (\Exception $e) {
+        // Return Json Response
+        return response()->json([
+            'message' => "Something went really wrong!"
+        ], 500);
+    }
 
 });
 

@@ -39,8 +39,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->back();
         }
 
-        if($role->role_id == 1 || $role->role_id == 2){
-
+        if($role->role_id == 1 || $role->role_id == 4 || $role->role_id == 2){
 
             $request->authenticate();
 

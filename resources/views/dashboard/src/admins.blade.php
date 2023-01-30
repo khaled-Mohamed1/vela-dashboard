@@ -81,6 +81,14 @@
             </div>
             @endhasrole
 
+            @hasrole('Super Admin Company')
+            <a
+                href="{{route('admins.create.admin')}}"
+                class="btn btn-primary"
+                id="add_admin"
+            >+ Add Admin</a>
+            @endhasrole
+
         </div>
         <div>
             <a href="{{route('tasks')}}" class="btn btn-primary" id="admins_show_tasks">Show Tasks</a>
@@ -137,24 +145,39 @@
                                 >
                                     Show
                                 </a>
-                                <a
-                                    href="{{route('admins.edit',['user'=>$user->id])}}"
-                                    class="btn btn-outline-primary flex-grow-1"
-                                    style="text-decoration: none"
-                                    id="admin_card_edit"
-                                >
-                                    Edit
-                                </a>
-                                <button
-                                    type="button"
-                                    class="btn btn-primary flex-grow-1"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal{{$user->id}}"
-                                    id="admin_card_delete"
-                                    onclick="changeModalLang()"
-                                >
-                                    Delete
-                                </button>
+                                @hasrole('Super Admin Company')
+                                @if($user->role_id == 4)
+                                    <a
+                                        href="{{route('admins.edit',['user'=>$user->id])}}"
+                                        class="btn btn-outline-primary flex-grow-1"
+                                        style="text-decoration: none"
+                                        id="admin_card_edit"
+                                    >
+                                        Edit
+                                    </a>
+                                @else
+                                    <a
+                                        href="{{route('admins.edit.admin',['user'=>$user->id])}}"
+                                        class="btn btn-outline-primary flex-grow-1"
+                                        style="text-decoration: none"
+                                        id="admin_card_edit"
+                                    >
+                                        Edit
+                                    </a>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary flex-grow-1"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal{{$user->id}}"
+                                        id="admin_card_delete"
+                                        onclick="changeModalLang()"
+                                    >
+                                        Delete
+                                    </button>
+                                @endif
+                                @endhasrole
+
+
                             </div>
                         </div>
                     </div>

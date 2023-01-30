@@ -59,6 +59,12 @@ Route::group(['middleware' => ['auth']], function() {
 //admin
     Route::get('/admin/dashboard/admins',[UserController::class, 'index'])->name('admins');
 
+    //super admin company create admin
+    Route::get('/admin/dashboard/admins/create/admin',[UserController::class, 'createAdmin'])->name('admins.create.admin');
+    Route::post('/admin/dashboard/admins/store/admin',[UserController::class, 'storeAdmin'])->name('admins.store.admin');
+    Route::get('/admin/dashboard/admins/edit/admin/{user}',[UserController::class, 'editAdmin'])->name('admins.edit.admin');
+    Route::post('/admin/dashboard/admins/update/admin/{user}',[UserController::class, 'updateAdmin'])->name('admins.update.admin');
+
     Route::get('/admin/dashboard/admins/create',[UserController::class, 'create'])->name('admins.create');
     Route::post('/admin/dashboard/admins/store',[UserController::class, 'store'])->name('admins.store');
     Route::get('/admin/dashboard/admins/edit/{user}',[UserController::class, 'edit'])->name('admins.edit');

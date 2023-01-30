@@ -31,6 +31,7 @@
   </div>
   <h1 class="heading" id="emp_heading">Employees</h1>
   <div class="table-container section-style">
+      @hasrole('Admin')
       <div
           style="
           display: flex;
@@ -58,6 +59,36 @@
               />
           </div>
       </div>
+      @endhasrole
+      @hasrole('Super Admin')
+      <div
+          style="
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+          gap: 20px;">
+          @if(auth()->user()->role_id == 1)
+              <a href="{{route('users.createTo')}}" class="btn btn-primary" id="emp_add_emp">+ Add Employee</a>
+          @else
+              <a href="{{route('users.create')}}" class="btn btn-primary" id="emp_add_emp">+ Add Employee</a>
+          @endif
+          <div class="input-group" style="width: 300px; height: 38px">
+          <span class="input-group-text" id="search_icon">
+            <button style="border: none">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </span>
+              <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                  id="admins_search"
+              />
+          </div>
+      </div>
+      @endhasrole
       <div class="container py-5 h-100">
           <div
               class="row d-flex justify-content-center align-items-center h-100"

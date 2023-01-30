@@ -18,10 +18,142 @@ class EmployeeController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
+    public function create_user_for_connect_cube($id)
+    {
+        $user=User::find($id);
+        DEFINE('APPLICATION_ID', 6892);
+        DEFINE('AUTH_KEY', "wJSMZHycdwNLwtW");
+        DEFINE('AUTH_SECRET', "bna9zQykZW5KxCa");
+
+        DEFINE('CB_API_ENDPOINT', "https://api.connectycube.com");
+        DEFINE('CB_PATH_SESSION', "session.json");
+
+        $nonce = rand();
+        $timestamp = time(); // time() method must return current timestamp in UTC but seems like hi is return timestamp in current time zone
+        $signature_string = "application_id=".APPLICATION_ID."&auth_key=".AUTH_KEY."&nonce=".$nonce."&timestamp=".$timestamp;
+        $signature = hash_hmac('sha1', $signature_string , AUTH_SECRET);
+
+        $post_body = http_build_query(array(
+            'application_id' => APPLICATION_ID,
+            'auth_key' => AUTH_KEY,
+            'timestamp' => $timestamp,
+            'nonce' => $nonce,
+            'signature' => $signature,
+        ));
+
+        // Configure cURL
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, CB_API_ENDPOINT . '/' . CB_PATH_SESSION); // Full path is - https://api.connectycube.com/session.json
+        curl_setopt($curl, CURLOPT_POST, true); // Use POST
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $post_body); // Setup post body
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // Receive server response
+
+        // Execute request and read responce
+        $responce = curl_exec($curl);
+
+        // Check errors
+        if ($responce) {
+            $data_response= json_decode($responce,true);
+            $token=$data_response['session']['token'];
+            try {
+                $client = new \GuzzleHttp\Client();
+                $create_user_in_connecty_cube= $client->request('POST', 'https://api.connectycube.com/users', [
+                    'headers' => [
+                        'CB-Token' =>$token,
+                        'Content-Type' => 'application/json',
+                    ],
+                    'body' => '{
+                    "user": {
+                        "login": "'.$user->full_name.'",
+                        "password": "12341234",
+                        "email": "'.$user->email.'",
+                        "full_name": "'.$user->full_name.'",
+                        "phone": "'.$user->phone_NO.'"
+                        }
+                   }',
+                ]);
+                $user = json_decode($create_user_in_connecty_cube->getBody()->getContents());
+
+                return $user;
+            } catch (\Throwable $th) {
+                dd('error', $th->getMessage());
+            }
+
+        } else {
+            $error = curl_error($curl). '(' .curl_errno($curl). ')';
+            echo $error . "\n";
+        }
+
+        // Close connection
+        curl_close($curl);
+
+    }
+
+    public function get_user_from_connect_cube_updated($id)
+    {
+        $user=User::find($id);
+        DEFINE('APPLICATION_ID2', 6892);
+        DEFINE('AUTH_KEY2', "wJSMZHycdwNLwtW");
+        DEFINE('AUTH_SECRET2', "bna9zQykZW5KxCa");
+
+        DEFINE('CB_API_ENDPOINT2', "https://api.connectycube.com");
+        DEFINE('CB_PATH_SESSION2', "session.json");
+
+        $nonce = rand();
+        $timestamp = time(); // time() method must return current timestamp in UTC but seems like hi is return timestamp in current time zone
+        $signature_string = "application_id=".APPLICATION_ID2."&auth_key=".AUTH_KEY2."&nonce=".$nonce."&timestamp=".$timestamp;
+        $signature = hash_hmac('sha1', $signature_string , AUTH_SECRET2);
+        $post_body = http_build_query(array(
+            'application_id' => APPLICATION_ID2,
+            'auth_key' => AUTH_KEY2,
+            'timestamp' => $timestamp,
+            'nonce' => $nonce,
+            'signature' => $signature,
+        ));
+
+        // Configure cURL
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, CB_API_ENDPOINT2 . '/' . CB_PATH_SESSION2); // Full path is - https://api.connectycube.com/session.json
+        curl_setopt($curl, CURLOPT_POST, true); // Use POST
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $post_body); // Setup post body
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // Receive server response
+
+        // Execute request and read responce
+        $responce = curl_exec($curl);
+
+        // Check errors
+        if ($responce) {
+            $data_response= json_decode($responce,true);
+            $token=$data_response['session']['token'];
+
+            try {
+                $client = new \GuzzleHttp\Client();
+                $get_user_from_connecty_cube= $client->request('GET', 'https://api.connectycube.com/users/by_email', [
+                    'headers' => [
+                        'CB-Token' =>$token,
+                    ],
+                    'json' => [
+                        'email' => $user->email,
+                    ]
+                ]);
+                $user_by_email = json_decode($get_user_from_connecty_cube->getBody()->getContents());
+                $user->connecty_cube_id = $user_by_email->user->id;
+                $user->save();
+            } catch (\Throwable $th) {
+                dd('error', $th->getMessage());
+            }
+
+        } else {
+            $error = curl_error($curl). '(' .curl_errno($curl). ')';
+        }
+
+// Close connection
+        curl_close($curl);
+
+    }
+
     public function index()
     {
-
-
         if(auth()->user()->role_id == 1){
             $users = User::where('role_id',3)->orderBy('id','DESC')->paginate(5);
         }else{
@@ -104,17 +236,7 @@ class EmployeeController extends Controller
                 'role_id' => '3'
             ]);
 
-//            $client = new \GuzzleHttp\Client();
-//            $url = 'https://velatest.pal-lady.com/api/user/verify';
-//
-//            $form_params = [
-//                'email'             => $request->email,
-//                'password'    =>bcrypt($request->password),
-//                'login'     => $request->full_name,
-//            ];
-//
-//           $response = $client->post($url, ['form_params' => $form_params]);
-//            $response = $response->getBody()->getContents();
+
 
             $user->assignRole(3);
 
@@ -130,7 +252,12 @@ class EmployeeController extends Controller
                     'password' => $request->password]
             ];
 
-            \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
+//            \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
+
+            $this->create_user_for_connect_cube($user->id);
+
+            $this->get_user_from_connect_cube_updated($user->id);
+
 
 //            //add the employee to group
             $conversation = Conversation::where('company_group', auth()->user()->company_NO)->first();
@@ -223,6 +350,10 @@ class EmployeeController extends Controller
             // Commit And Redirected To Listing
             DB::commit();
 
+            $this->create_user_for_connect_cube($user->id);
+
+            $this->get_user_from_connect_cube_updated($user->id);
+
             $details = [
                 'title' => 'Mail from vela app',
                 'body' => ['Email:' => $user->email,
@@ -230,7 +361,7 @@ class EmployeeController extends Controller
                     'Password' => $request->password]
             ];
 
-            \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
+//            \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
 
 
             //add the employee to group
