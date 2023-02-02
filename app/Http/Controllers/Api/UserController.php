@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\Meet;
+use App\Models\MeetInvite;
 use App\Models\Task;
 use App\Models\TaskNote;
 use App\Models\ToDoList;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -25,7 +28,8 @@ class UserController extends Controller
             'taskGet','taskUpdate','taskGetUser','taskGetNote','taskStoreNoteUser','taskUpdateUser',
             'todolistGet','todolistStore','todolistUpdate',
             'events','eventStore','eventUpdate','eventDelete',
-            'contacts'
+            'contacts',
+            'meets','meetStore'
         ]]);
     }
 
@@ -567,6 +571,119 @@ class UserController extends Controller
         }
     }
 
+    //meets
+    public function meets(Request $request)
+    {
+
+        try {
+
+            $futureDays = 100;
+            $meets = MeetInvite::with(['MeetInviteMeet' => function($query) use($futureDays){
+                $query->where('start_date', '>', Carbon::today())
+                    ->where('start_date', '<=', Carbon::today()->addDays($futureDays))
+                    ->with(['meetInvites.MeetInviteUser']);
+            }])->where('user_id', $request->user_id)->latest()->get();
+
+            return response()->json([
+                'status' => 'success',
+                'meets' => $meets->whereNotNull('MeetInviteMeet'),
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Return Json Response
+            return response()->json([
+                'message' => "Something went really wrong!",
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function meetStore(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            // Find user
+            $user = User::find($request->user_id);
+
+            if (!$user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'لا يوجد مستخدم بهذا الإسم'
+                ], 404);
+            }
+
+            $validateUser = Validator::make(
+                $request->all(),
+                [
+                    'title' => 'required',
+                    'start_date' => 'required|date',
+                    'start_time' => 'required',
+                ],
+                [
+                    'title.required' => 'يجب ادخال عنوان الإجتماع!',
+                    'start_date.required' => 'يجب ادخال تاريخ بداية الحدث',
+                    'start_date.date' => 'الحقل يجب انا يكون تاريخ',
+                    'start_time.time' => 'حقل وقت بداية الحدث يجب انا يكون بهذا الترميز (hh:mm:ss).',
+                    'start_time.required' => 'يجب ادخال وقت تاريخ بداية الحدث',
+                ]
+            );
+
+            if ($validateUser->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'validation error',
+                    'errors' => $validateUser->errors()
+                ], 401);
+            }
+
+            $meet = Meet::create([
+                'user_id' => $request->user_id,
+                'title' => $request->title,
+                'description' => $request->description,
+                'about' => $request->about,
+                'start_date' => $request->start_date,
+                'start_time' => $request->start_time,
+            ]);
+
+            foreach ($request->user_invites as $user){
+                $invite_user = MeetInvite::create([
+                   'user_id' => $user,
+                   'meet_id' => $meet->id
+                ]);
+            }
+
+            foreach ($request->user_invites as $user){
+                $user_email = User::find($user);
+                $details = [
+                    'title' => 'Mail from vela app',
+                    'body' => ['from' => $meet->UserMeet->full_name,
+                        'start_date' => $meet->start_date,
+                        'start_time' => $meet->start_time,
+                        'link' => $meet->link]
+                ];
+                \Mail::to($user_email->email)->send(new \App\Mail\MeetInvite($details));
+            }
+
+            $meet = Meet::with(['meetInvites.MeetInviteUser', 'UserMeet'])->find($meet->id);
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'meet' => $meet,
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Return Json Response
+            DB::rollBack();
+            return response()->json([
+                'message' => "Something went really wrong!",
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    //contacts
     public function contacts(Request $request)
     {
 

@@ -37,6 +37,7 @@ class User extends Authenticatable
         'status',
         'private_status',
         'connecty_cube_id',
+        'qr_code_path'
     ];
 
     /**
@@ -87,9 +88,14 @@ class User extends Authenticatable
         return $this->hasMany(TaskNote::class, 'user_id', 'id');
     }
 
-    public function meetUser()
+    public function meets()
     {
         return $this->hasMany(Meet::class, 'user_id', 'id');
+    }
+
+    public function meetInvites()
+    {
+        return $this->hasMany(MeetInvite::class, 'user_id', 'id');
     }
 
 

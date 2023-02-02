@@ -30,6 +30,7 @@ class CreateUsersTable extends Migration
             $table->string('status')->default('offline');
             $table->boolean('private_status')->default(false);
             $table->string('connecty_cube_id')->unique()->nullable();
+            $table->text('qr_code_path')->unique()->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

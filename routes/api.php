@@ -82,6 +82,9 @@ Route::group([
         Route::post('event/status', [UserController::class, 'eventUpdate']);
         Route::post('event/delete', [UserController::class, 'eventDelete']);
 
+        //meet
+        Route::post('meets', [UserController::class, 'meets']);
+        Route::post('meet/store', [UserController::class, 'meetStore']);
 
     });
 

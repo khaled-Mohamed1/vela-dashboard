@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use App\Models\Participant;
-use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class UserController extends Controller
 {
@@ -156,11 +156,18 @@ class UserController extends Controller
      */
     public function index()
     {
-        if(auth()->user()->role_id == 1 || auth()->user()->role_id == 4){
+        if(auth()->user()->role_id == 1 ){
             $users = User::where('role_id',4)->orWhere('role_id', 2)->orderBy('id','DESC')->paginate(5);
+        }elseif( auth()->user()->role_id == 4){
+            $users = User::where('company_NO', auth()->user()->company_NO)->
+                where(function ($query){
+                    $query->where('role_id',4)->orWhere('role_id', 2);
+                })->orderBy('id','DESC')->paginate(5);
+
         }else{
             $users = User::where('id', auth()->user()->id)->paginate(5);
         }
+
         return view('dashboard/src/admins',compact('users'));
     }
 
@@ -183,6 +190,7 @@ class UserController extends Controller
 
     public function storeAdmin(Request $request)
     {
+
 
         App::setLocale($request->input('locale'));
 
@@ -230,7 +238,6 @@ class UserController extends Controller
 
             $randomString  = mt_rand(100000,999999);
 
-
             $user = User::create([
                 'full_name' => $request->full_name,
                 'email'    => $request->email,
@@ -246,6 +253,7 @@ class UserController extends Controller
 
 
 
+            //End of QrCode
             $user->assignRole(2);
             DB::commit();
             Storage::disk('public')->put('admins/' . $imageName, file_get_contents($request->image));
@@ -269,6 +277,33 @@ class UserController extends Controller
                 'user_id' => $user->id
             ]);
 
+            // create QrCode
+            try {
+                $userInfo = [
+                    "id" => $user->id,
+                    "full_name" => $user->full_name,
+                    "email" => $user->email,
+                    "phone_NO" => $user->phone_NO,
+                    // add other user information
+                ];
+
+                $data = json_encode($userInfo);
+
+                $qrCode = QrCode::format('png')->size(200)
+                    ->errorCorrection('H')->generate($data);
+
+                $output_file = 'qr-code/img-' . time() . '.png';
+                Storage::disk('public')->put($output_file, $qrCode);
+
+                $user_update = User::find($user->id);
+                $user_update->qr_code_path = 'https://velatest.pal-lady.com/storage/app/public/' . $output_file;
+                $user_update->save();
+
+            } catch (\Throwable $th) {
+                dd('error', $th->getMessage());
+            }
+
+            // Encode user information as a string
 
 
             // Commit And Redirected To Listing
@@ -483,6 +518,34 @@ class UserController extends Controller
                 'conversations_id' => $conversation->id,
                 'user_id' => $user->id
             ]);
+
+            // create QrCode
+            try {
+                $userInfo = [
+                    "id" => $user->id,
+                    "full_name" => $user->full_name,
+                    "email" => $user->email,
+                    "phone_NO" => $user->phone_NO,
+                    // add other user information
+                ];
+
+                $data = json_encode($userInfo);
+
+                $qrCode = QrCode::format('png')->size(200)
+                    ->errorCorrection('H')->generate($data);
+
+                $output_file = 'qr-code/img-' . time() . '.png';
+                Storage::disk('public')->put($output_file, $qrCode);
+
+                $user_update = User::find($user->id);
+                $user_update->qr_code_path = 'https://velatest.pal-lady.com/storage/app/public/' . $output_file;
+                $user_update->save();
+
+            } catch (\Throwable $th) {
+                dd('error', $th->getMessage());
+            }
+
+            // Encode user information as a string
 
 
 

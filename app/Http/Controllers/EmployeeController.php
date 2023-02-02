@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class EmployeeController extends Controller
 {
@@ -254,9 +255,9 @@ class EmployeeController extends Controller
 
 //            \Mail::to($user->email)->send(new \App\Mail\RegisterUserMail($details));
 
-            $this->create_user_for_connect_cube($user->id);
-
-            $this->get_user_from_connect_cube_updated($user->id);
+//            $this->create_user_for_connect_cube($user->id);
+//
+//            $this->get_user_from_connect_cube_updated($user->id);
 
 
 //            //add the employee to group
@@ -266,6 +267,34 @@ class EmployeeController extends Controller
                 'conversations_id' => $conversation->id,
                 'user_id' => $user->id
             ]);
+
+            // create QrCode
+            try {
+                $userInfo = [
+                    "id" => $user->id,
+                    "full_name" => $user->full_name,
+                    "email" => $user->email,
+                    "phone_NO" => $user->phone_NO,
+                    // add other user information
+                ];
+
+                $data = json_encode($userInfo);
+
+                $qrCode = QrCode::format('png')->size(200)
+                    ->errorCorrection('H')->generate($data);
+
+                $output_file = 'qr-code/img-' . time() . '.png';
+                Storage::disk('public')->put($output_file, $qrCode);
+
+                $user_update = User::find($user->id);
+                $user_update->qr_code_path = 'https://velatest.pal-lady.com/storage/app/public/' . $output_file;
+                $user_update->save();
+
+            } catch (\Throwable $th) {
+                dd('error', $th->getMessage());
+            }
+
+            // Encode user information as a string
 
             if ($language == 'en') {
                 return redirect()->route('users')->with('success','Employee Created Successfully');
@@ -350,9 +379,9 @@ class EmployeeController extends Controller
             // Commit And Redirected To Listing
             DB::commit();
 
-            $this->create_user_for_connect_cube($user->id);
-
-            $this->get_user_from_connect_cube_updated($user->id);
+//            $this->create_user_for_connect_cube($user->id);
+//
+//            $this->get_user_from_connect_cube_updated($user->id);
 
             $details = [
                 'title' => 'Mail from vela app',
@@ -371,6 +400,34 @@ class EmployeeController extends Controller
                 'conversations_id' => $conversation->id,
                 'user_id' => $user->id
             ]);
+
+            // create QrCode
+            try {
+                $userInfo = [
+                    "id" => $user->id,
+                    "full_name" => $user->full_name,
+                    "email" => $user->email,
+                    "phone_NO" => $user->phone_NO,
+                    // add other user information
+                ];
+
+                $data = json_encode($userInfo);
+
+                $qrCode = QrCode::format('png')->size(200)
+                    ->errorCorrection('H')->generate($data);
+
+                $output_file = 'qr-code/img-' . time() . '.png';
+                Storage::disk('public')->put($output_file, $qrCode);
+
+                $user_update = User::find($user->id);
+                $user_update->qr_code_path = 'https://velatest.pal-lady.com/storage/app/public/' . $output_file;
+                $user_update->save();
+
+            } catch (\Throwable $th) {
+                dd('error', $th->getMessage());
+            }
+
+            // Encode user information as a string
 
             if ($language == 'en') {
                 return redirect()->route('users')->with('success','Employee Created Successfully');

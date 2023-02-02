@@ -25,4 +25,9 @@ class Meet extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function meetInvites()
+    {
+        return $this->hasMany(MeetInvite::class, 'meet_id', 'id');
+    }
+
 }
